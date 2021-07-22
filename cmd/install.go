@@ -22,6 +22,12 @@ var installCmd = &cobra.Command{
 			log.Fatalln("requires a version argument.")
 		}
 		ver := args[0]
+		info, err := os.Stat(filepath.Join(cfg.GorootsDir, ver))
+		cobra.CheckErr(err)
+		if info.IsDir() {
+			log.Fatalf("%s is already exists.", ver)
+		}
+
 		ext := "tar.gz"
 		if runtime.GOARCH == "windows" {
 			ext = "zip"
