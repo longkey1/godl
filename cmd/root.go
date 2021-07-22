@@ -12,6 +12,8 @@ import (
 
 const (
 	DefaultGolangUrl = "https://golang.org"
+	DefaultGorootsDir = "goroots"
+	DefaultTempDir = "tmp"
 )
 
 type Config struct {
@@ -76,11 +78,10 @@ func initConfig() {
 
 	// SetDefault
 	viper.SetDefault("golang_url", DefaultGolangUrl)
-	viper.SetDefault("goroots_dir", filepath.Join(defaultConfigPath(), "goroots"))
-	viper.SetDefault("temp_dir", filepath.Join(defaultConfigPath(), "tmp"))
+	viper.SetDefault("goroots_dir", filepath.Join(defaultConfigPath(), DefaultGorootsDir))
+	viper.SetDefault("temp_dir", filepath.Join(defaultConfigPath(), DefaultTempDir))
 
-	err := viper.Unmarshal(&cfg)
-	cobra.CheckErr(err)
+	cobra.CheckErr(viper.Unmarshal(&cfg))
 }
 
 func defaultConfigPath() string {
