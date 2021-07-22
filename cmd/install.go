@@ -1,18 +1,3 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
@@ -31,7 +16,7 @@ import (
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
-	Short: "A brief description of your command",
+	Short: "install specific version",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Fatalln("requires a version argument.")
@@ -41,66 +26,42 @@ var installCmd = &cobra.Command{
 		if runtime.GOARCH == "windows" {
 			ext = "zip"
 		}
-		url := fmt.Sprintf("%s/dl/go%s.%s-%s.%s", GolangUrl, ver, runtime.GOOS, runtime.GOARCH, ext)
+		url := fmt.Sprintf("%s/dl/go%s.%s-%s.%s", cfg.GolangUrl, ver, runtime.GOOS, runtime.GOARCH, ext)
 
 		res, err := http.Get(url)
-		if err != nil {
-			log.Fatalf("download error. %s", err)
-		}
+		cobra.CheckErr(err)
+
 		defer func(Body io.ReadCloser) {
 			err := Body.Close()
-			if err != nil {
-				log.Fatalf("file close error. %s", err)
-			}
+			cobra.CheckErr(err)
 		}(res.Body)
 
-		archiveFile := filepath.Join(os.TempDir(), fmt.Sprintf("godl-archive.%s", ext))
+		archiveFile := filepath.Join(cfg.TempDir, fmt.Sprintf("godl-archive.%s", ext))
 		archive, err := os.Create(archiveFile)
-		if err != nil {
-			log.Fatalf("temporary file error. %s", err)
-		}
+		cobra.CheckErr(err)
 		defer func(out *os.File) {
 			err := out.Close()
-			if err != nil {
-				log.Fatalf("file close error. %s", err)
-			}
+			cobra.CheckErr(err)
 		}(archive)
 
 		_, err = io.Copy(archive, res.Body)
+		cobra.CheckErr(err)
 
-		extractDir := filepath.Join(GodlDir, fmt.Sprintf("godl-extract-%s", ver))
+		extractDir := filepath.Join(cfg.TempDir, fmt.Sprintf("godl-extract-%s", ver))
 		err = archiver.Unarchive(archiveFile, extractDir)
-		if err != nil {
-			log.Fatalf("unarchive error. %s", err)
-		}
+		cobra.CheckErr(err)
 
-		err = os.Rename(filepath.Join(extractDir, "go"), filepath.Join(GodlDir, ver))
-		if err != nil {
-			log.Fatalf("rename error. from: %s, to: %s, %s", filepath.Join(extractDir, "go"), filepath.Join(GodlDir, ver), err)
-		}
+		err = os.Rename(filepath.Join(extractDir, "go"), filepath.Join(cfg.GorootsDir, ver))
+		cobra.CheckErr(err)
 
 		err = os.Remove(archiveFile)
-		if err != nil {
-			log.Fatalf("remove error. %s, %s", archiveFile, err)
-		}
+		cobra.CheckErr(err)
 
 		err = os.Remove(extractDir)
-		if err != nil {
-			log.Fatalf("remove error. %s, %s", archiveFile, err)
-		}
+		cobra.CheckErr(err)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(installCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// installCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// installCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
