@@ -1,32 +1,26 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/spf13/viper"
 )
 
 const (
-	GolangUrl = "https://golang.org"
-	GodlDir = ".godl"
+	DefaultGolangUrl = "https://golang.org"
 )
+
+type Config struct {
+	GolangUrl string `mapstructure:"golang_url"`
+	GorootsDir string `mapstructure:"goroots_dir"`
+	TempDir string `mapstructure:"temp_dir"`
+}
+
+var cfg Config
 
 var cfgFile string
 
@@ -34,13 +28,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Version: "0.0.1",
 	Use:   "godl",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "golang downloader",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -59,7 +47,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.godl.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %s)", defaultConfigPath()))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -72,20 +60,46 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".godl" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".godl")
+		// Search config in config directory with name ".godl" (without extension).
+		viper.AddConfigPath(defaultConfigPath())
+		viper.SetConfigType("toml")
+		viper.SetConfigName("config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		_, err := fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		cobra.CheckErr(err)
 	}
+
+	// SetDefault
+	viper.SetDefault("golang_url", DefaultGolangUrl)
+	viper.SetDefault("goroots_dir", filepath.Join(defaultConfigPath(), "goroots"))
+	viper.SetDefault("temp_dir", filepath.Join(defaultConfigPath(), "tmp"))
+
+	err := viper.Unmarshal(&cfg)
+	cobra.CheckErr(err)
+}
+
+func defaultConfigPath() string {
+	config, err := os.UserConfigDir()
+	cobra.CheckErr(err)
+
+	if runtime.GOOS == "darwin" {
+		config = os.Getenv("XDG_CONFIG_HOME")
+		if config == "" {
+			home, err := os.UserHomeDir()
+			cobra.CheckErr(err)
+
+			if home == "" {
+				_, err := fmt.Fprintln(os.Stderr, "$XDG_CONFIG_HOME or $HOME are not defined")
+				cobra.CheckErr(err)
+			}
+			config = filepath.Join(home, ".config")
+		}
+	}
+
+	return filepath.Join(config, "godl")
 }
