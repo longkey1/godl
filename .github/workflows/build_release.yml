@@ -1,6 +1,11 @@
 name: build_release
 
-on: push
+on:
+  push:
+    branches:
+      - 'master'
+    tags-ignore:
+      - 'v*'
 
 jobs:
   build:
@@ -70,6 +75,8 @@ jobs:
 
       - name: Release
         run: |
+          ls ./bin
+          ls ./dist
           chmod +x ./bin/godl
-          ghr -t ${{secrets.GH_PAT}} -u longkey1 -r godl v$(./bin/godl --version | cut -d " " -f 3) dist/
+          ghr -t ${{secrets.GH_PAT}} -u longkey1 -r godl v$(./bin/godl --version | cut -d " " -f 3) ./dist
 
