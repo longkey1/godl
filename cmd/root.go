@@ -32,6 +32,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
+	Version: "0.0.1",
 	Use:   "godl",
 	Short: "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
