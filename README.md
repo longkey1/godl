@@ -20,3 +20,14 @@ $ godl [command]
 - `remove` remove specific version
 
 Use "godl [command] --help" for more information about a command.
+
+## Configration
+
+`path/to/godl/config.toml`
+
+```
+golang_url = "https://golang.org"
+goroots_dir = "goroots"
+temp_dir" = "tmp"
+```
+
