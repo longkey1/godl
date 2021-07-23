@@ -12,6 +12,7 @@ $ godl [command]
 ## Available Commands
 
 - `completion` generate the autocompletion script for the specified shell
+  `goroots` describe goroots directory path
 - `help` Help about any command
 - `install` install specific version
 - `list` installed version list
