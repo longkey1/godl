@@ -22,8 +22,8 @@ var installCmd = &cobra.Command{
 			log.Fatalln("requires a version argument.")
 		}
 		ver := args[0]
-		info, _ := os.Stat(filepath.Join(cfg.GorootsDir, ver))
-		if info.IsDir() {
+		info, err := os.Stat(filepath.Join(cfg.GorootsDir, ver))
+		if os.IsNotExist(err) == false && info.IsDir() {
 			log.Fatalf("%s is already exists.", ver)
 		}
 
