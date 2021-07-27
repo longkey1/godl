@@ -49,7 +49,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %s)", defaultConfigPath()))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %s)", filepath.Join(defaultConfigPath(), "config.toml")))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -102,5 +102,5 @@ func defaultConfigPath() string {
 		}
 	}
 
-	return filepath.Join(config, "godl", "config.toml")
+	return filepath.Join(config, "godl")
 }
