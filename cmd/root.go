@@ -102,5 +102,5 @@ func defaultConfigPath() string {
 		}
 	}
 
-	return filepath.Join(config, "godl")
+	return filepath.Join(config, "godl", "config.toml")
 }
