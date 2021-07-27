@@ -48,8 +48,19 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %s)", filepath.Join(defaultConfigPath(), "config.toml")))
+
+	rootCmd.PersistentFlags().String("gourl", DefaultGorootsDir, "golang url")
+	err := viper.BindPFlag("golang_url", rootCmd.PersistentFlags().Lookup("gourl"))
+	cobra.CheckErr(err)
+
+	rootCmd.PersistentFlags().String("goroots", DefaultGorootsDir, "goroots directory")
+	err = viper.BindPFlag("goroots_dir", rootCmd.PersistentFlags().Lookup("goroots"))
+	cobra.CheckErr(err)
+
+	rootCmd.PersistentFlags().String("temp", DefaultGorootsDir, "temp directory")
+	err = viper.BindPFlag("temp_dir", rootCmd.PersistentFlags().Lookup("temp"))
+	cobra.CheckErr(err)
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

@@ -21,6 +21,9 @@ var listCmd = &cobra.Command{
 			}
 			fmt.Println(file.Name())
 		}
+
+		//debug
+		fmt.Printf("%#v\n", cfg)
 	},
 }
 
