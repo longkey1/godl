@@ -64,6 +64,8 @@ var installCmd = &cobra.Command{
 
 		err = os.Remove(extractDir)
 		cobra.CheckErr(err)
+
+		log.Printf("%s is installed.", ver)
 	},
 }
 
