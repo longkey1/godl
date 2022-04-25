@@ -11,15 +11,15 @@ import (
 )
 
 const (
-	DefaultGolangUrl = "https://golang.org"
+	DefaultGolangUrl  = "https://golang.org"
 	DefaultGorootsDir = "goroots"
-	DefaultTempDir = "tmp"
+	DefaultTempDir    = "tmp"
 )
 
 type Config struct {
-	GolangUrl string `mapstructure:"golang_url"`
+	GolangUrl  string `mapstructure:"golang_url"`
 	GorootsDir string `mapstructure:"goroots_dir"`
-	TempDir string `mapstructure:"temp_dir"`
+	TempDir    string `mapstructure:"temp_dir"`
 }
 
 var cfg Config
@@ -28,9 +28,9 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: "0.0.8",
-	Use:   "godl",
-	Short: "golang downloader",
+	Version: "0.1.0",
+	Use:     "godl",
+	Short:   "golang downloader",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
