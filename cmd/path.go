@@ -30,8 +30,6 @@ var pathCmd = &cobra.Command{
 			if file.IsDir() == false {
 				continue
 			}
-			fmt.Println(target)
-			fmt.Println(file.Name())
 			if strings.Index(file.Name(), target) == 0 && latestVer < file.Name() {
 				latestVer = file.Name()
 			}
