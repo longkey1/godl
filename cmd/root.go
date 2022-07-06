@@ -28,7 +28,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: "0.1.1",
+	Version: "0.1.2",
 	Use:     "godl",
 	Short:   "golang downloader",
 	// Uncomment the following line if your bare application
