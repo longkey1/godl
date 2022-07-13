@@ -8,9 +8,9 @@ import (
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "installed version list",
+	Short:   "installed version list",
 	Run: func(cmd *cobra.Command, args []string) {
 		files, err := ioutil.ReadDir(cfg.GorootsDir)
 		cobra.CheckErr(err)
@@ -21,9 +21,6 @@ var listCmd = &cobra.Command{
 			}
 			fmt.Println(file.Name())
 		}
-
-		//debug
-		fmt.Printf("%#v\n", cfg)
 	},
 }
 
