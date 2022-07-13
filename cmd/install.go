@@ -19,7 +19,6 @@ var installCmd = &cobra.Command{
 	Short: "install specific version",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			log.Println("Install from configuration...")
 			for _, v := range cfg.Versions {
 				install(v)
 			}
@@ -37,7 +36,8 @@ func init() {
 func install(ver string) {
 	info, err := os.Stat(filepath.Join(cfg.GorootsDir, ver))
 	if os.IsNotExist(err) == false && info.IsDir() {
-		log.Fatalf("%s is already exists.", ver)
+		log.Printf("%s is already exists.", ver)
+		return
 	}
 
 	ext := "tar.gz"
