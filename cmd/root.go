@@ -17,9 +17,10 @@ const (
 )
 
 type Config struct {
-	GolangUrl  string `mapstructure:"golang_url"`
-	GorootsDir string `mapstructure:"goroots_dir"`
-	TempDir    string `mapstructure:"temp_dir"`
+	GolangUrl  string   `mapstructure:"golang_url"`
+	GorootsDir string   `mapstructure:"goroots_dir"`
+	TempDir    string   `mapstructure:"temp_dir"`
+	Versions   []string `mapstructure:"versions"`
 }
 
 var cfg Config
@@ -91,6 +92,7 @@ func initConfig() {
 	viper.SetDefault("golang_url", DefaultGolangUrl)
 	viper.SetDefault("goroots_dir", filepath.Join(defaultConfigPath(), DefaultGorootsDir))
 	viper.SetDefault("temp_dir", filepath.Join(defaultConfigPath(), DefaultTempDir))
+	viper.SetDefault("versions", []string{})
 
 	cobra.CheckErr(viper.Unmarshal(&cfg))
 }
