@@ -23,9 +23,11 @@ type Config struct {
 	Versions   []string `mapstructure:"versions"`
 }
 
-var cfg Config
-
-var cfgFile string
+var (
+	version = "dev"
+	cfgFile string
+	cfg Config
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
