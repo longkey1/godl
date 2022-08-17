@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/blang/semver/v4"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +16,6 @@ var pathCmd = &cobra.Command{
 	Use:   "path",
 	Short: "describe path",
 	Run: func(cmd *cobra.Command, args []string) {
-
 		if len(args) < 1 {
 			fmt.Println(cfg.GorootsDir)
 			return
@@ -30,7 +30,18 @@ var pathCmd = &cobra.Command{
 			if file.IsDir() == false {
 				continue
 			}
-			if strings.Index(file.Name(), target) == 0 && latestVer < file.Name() {
+			if strings.Index(file.Name(), target) != 0 {
+				continue
+			}
+			if len(latestVer) == 0 {
+				latestVer = file.Name()
+			}
+			ver1, err1 := semver.Make(latestVer)
+			ver2, err2 := semver.Make(file.Name())
+			if err1 != nil || err2 != nil {
+				continue
+			}
+			if ver1.Compare(ver2) < 0 {
 				latestVer = file.Name()
 			}
 		}
