@@ -30,20 +30,17 @@ var pathCmd = &cobra.Command{
 			if file.IsDir() == false {
 				continue
 			}
-			if strings.Index(file.Name(), target) != 0 {
-				continue
-			}
 			if file.Name() == target {
 				latest = file.Name()
 				break
 			}
-			targetVer, err := semver.Make(file.Name())
-			if err != nil {
+			if strings.Index(file.Name(), strings.TrimRight(target, ".")) != 0 {
 				continue
 			}
 			if len(latest) == 0 {
-				latest = targetVer.String()
+				latest = file.Name()
 			}
+			targetVer, _ := semver.Make(file.Name())
 			latestVer, _ := semver.Make(latest)
 			if latestVer.Compare(targetVer) < 0 {
 				latest = targetVer.String()
