@@ -25,7 +25,7 @@ var pathCmd = &cobra.Command{
 		files, err := ioutil.ReadDir(cfg.GorootsDir)
 		cobra.CheckErr(err)
 
-		latestVer := ""
+		latest := ""
 		for _, file := range files {
 			if file.IsDir() == false {
 				continue
@@ -33,23 +33,27 @@ var pathCmd = &cobra.Command{
 			if strings.Index(file.Name(), target) != 0 {
 				continue
 			}
-			if len(latestVer) == 0 {
-				latestVer = file.Name()
+			if file.Name() == target {
+				latest = file.Name()
+				break
 			}
-			ver1, err1 := semver.Make(latestVer)
-			ver2, err2 := semver.Make(file.Name())
-			if err1 != nil || err2 != nil {
+			targetVer, err := semver.Make(file.Name())
+			if err != nil {
 				continue
 			}
-			if ver1.Compare(ver2) < 0 {
-				latestVer = file.Name()
+			if len(latest) == 0 {
+				latest = targetVer.String()
+			}
+			latestVer, _ := semver.Make(latest)
+			if latestVer.Compare(targetVer) < 0 {
+				latest = targetVer.String()
 			}
 		}
-		if len(latestVer) == 0 {
+		if len(latest) == 0 {
 			log.Fatalln("Not found matched version")
 		}
 
-		fmt.Println(filepath.Join(cfg.GorootsDir, latestVer))
+		fmt.Println(filepath.Join(cfg.GorootsDir, latest))
 	},
 }
 
