@@ -3,7 +3,10 @@ name: gorelease
 on:
   push:
     tags:
-      - "*"
+      - '*'
+
+permissions:
+  contents: write
 
 jobs:
   gorelease:
@@ -14,22 +17,19 @@ jobs:
           echo "TZ=Asia/Tokyo" >> ${GITHUB_ENV}
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Fetch all tags
-        run: git fetch --force --tags
-
-      - name: Set up golang
-        uses: actions/setup-go@v2
+      - name: Set up Golang
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.18.3'
+          go-version: '1.21.2'
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
