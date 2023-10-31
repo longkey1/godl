@@ -26,7 +26,7 @@ type Config struct {
 var (
 	version = "dev"
 	cfgFile string
-	cfg Config
+	cfg     Config
 )
 
 // rootCmd represents the base command when called without any subcommands

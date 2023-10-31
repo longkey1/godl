@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/blang/semver/v4 v4.0.0
+	github.com/hashicorp/go-version v1.6.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.17.0
