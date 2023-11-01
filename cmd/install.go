@@ -18,19 +18,27 @@ var installCmd = &cobra.Command{
 	Use:   "install",
 	Short: "install specific version",
 	Run: func(cmd *cobra.Command, args []string) {
+		strict, err := cmd.Flags().GetBool("strict")
+		cobra.CheckErr(err)
+
 		if len(args) < 1 {
 			for _, v := range cfg.Versions {
-				install(v)
+				if strict {
+					install(v)
+				} else {
+					install(latestVersion(v, remoteLatestVersions()))
+				}
 			}
 		} else {
-			ver := args[0]
-			install(ver)
+			v := args[0]
+
+			if strict {
+				install(v)
+			} else {
+				install(latestVersion(v, remoteLatestVersions()))
+			}
 		}
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(installCmd)
 }
 
 func install(ver string) {
@@ -79,4 +87,9 @@ func install(ver string) {
 	cobra.CheckErr(err)
 
 	log.Printf("%s is installed.", ver)
+}
+
+func init() {
+	rootCmd.AddCommand(installCmd)
+	installCmd.Flags().Bool("strict", false, "If true, install the given version strictly")
 }

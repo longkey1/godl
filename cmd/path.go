@@ -2,13 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"github.com/spf13/cobra"
 	"log"
 	"path/filepath"
-	"strings"
-
-	"github.com/blang/semver/v4"
-	"github.com/spf13/cobra"
 )
 
 // pathCmd represents the path command
@@ -22,31 +18,8 @@ var pathCmd = &cobra.Command{
 		}
 		target := args[0]
 
-		files, err := ioutil.ReadDir(cfg.GorootsDir)
-		cobra.CheckErr(err)
-
-		latest := ""
-		for _, file := range files {
-			if file.IsDir() == false {
-				continue
-			}
-			if file.Name() == target {
-				latest = file.Name()
-				break
-			}
-			if strings.Index(file.Name(), strings.TrimRight(target, ".")) != 0 {
-				continue
-			}
-			if len(latest) == 0 {
-				latest = file.Name()
-			}
-			targetVer, _ := semver.Make(file.Name())
-			latestVer, _ := semver.Make(latest)
-			if latestVer.Compare(targetVer) < 0 {
-				latest = targetVer.String()
-			}
-		}
-		if len(latest) == 0 {
+		latest := latestVersion(target, localLatestVersions())
+		if latest == InitialVersion {
 			log.Fatalln("Not found matched version")
 		}
 

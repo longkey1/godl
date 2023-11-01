@@ -2,10 +2,19 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	hv "github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"sort"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -14,6 +23,7 @@ const (
 	DefaultGolangUrl  = "https://golang.org"
 	DefaultGorootsDir = "goroots"
 	DefaultTempDir    = "tmp"
+	InitialVersion    = "0.0.0"
 )
 
 type Config struct {
@@ -118,4 +128,110 @@ func defaultConfigPath() string {
 	}
 
 	return filepath.Join(config, "godl")
+}
+
+func remoteVersions() []*hv.Version {
+	res, err := http.Get(cfg.GolangUrl + "/dl")
+	cobra.CheckErr(err)
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		cobra.CheckErr(err)
+	}(res.Body)
+
+	if res.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	cobra.CheckErr(err)
+
+	var versionsRaw []string
+	doc.Find("a.download").Each(func(i int, s *goquery.Selection) {
+		// For each item found, get the title
+		url, _ := s.Attr("href")
+		if strings.HasSuffix(url, "src.tar.gz") == false {
+			return
+		}
+		reg := regexp.MustCompile(`/dl/go([0-9.]+)\.src\.tar\.gz$`)
+		ver := reg.FindStringSubmatch(url)
+		if len(ver) > 1 {
+			versionsRaw = append(versionsRaw, ver[1])
+		}
+	})
+
+	versions := make([]*hv.Version, len(versionsRaw))
+	for i, raw := range versionsRaw {
+		v, _ := hv.NewVersion(raw)
+		versions[i] = v
+	}
+
+	sort.Sort(sort.Reverse(hv.Collection(versions)))
+
+	return versions
+}
+
+func remoteLatestVersions() []*hv.Version {
+	versions := remoteVersions()
+	latestVersionsMap := make(map[string]*hv.Version)
+	for _, v := range versions {
+		seg := v.Segments()
+		minorVersionKey := fmt.Sprintf("%d_%d", seg[0], seg[1])
+		if _, ok := latestVersionsMap[minorVersionKey]; ok {
+			continue
+		}
+		latestVersionsMap[minorVersionKey] = v
+	}
+	var latestVersions []*hv.Version
+	for _, v := range latestVersionsMap {
+		latestVersions = append(latestVersions, v)
+	}
+
+	sort.Sort(sort.Reverse(hv.Collection(latestVersions)))
+
+	return latestVersions
+}
+
+func localLatestVersions() []*hv.Version {
+	files, err := ioutil.ReadDir(cfg.GorootsDir)
+	cobra.CheckErr(err)
+
+	var versionsRaw []string
+	for _, file := range files {
+		if file.IsDir() == false {
+			continue
+		}
+		versionsRaw = append(versionsRaw, file.Name())
+	}
+
+	latestVersions := make([]*hv.Version, len(versionsRaw))
+	for i, raw := range versionsRaw {
+		v, _ := hv.NewVersion(raw)
+		latestVersions[i] = v
+	}
+
+	sort.Sort(sort.Reverse(hv.Collection(latestVersions)))
+
+	return latestVersions
+}
+
+func latestVersion(ver string, latestVersions []*hv.Version) string {
+	target, _ := hv.NewVersion(ver)
+	seg := target.Segments()
+
+	latest, err := hv.NewVersion(InitialVersion)
+	cobra.CheckErr(err)
+
+	for _, v := range latestVersions {
+		if latest.GreaterThan(v) {
+			continue
+		}
+		segl := v.Segments()
+		if seg[0] == segl[0] && seg[1] == segl[1] {
+			latest = v
+			continue
+		}
+	}
+
+	return latest.Original()
 }
