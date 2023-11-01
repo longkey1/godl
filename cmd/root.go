@@ -41,7 +41,7 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: "0.2.1",
+	Version: version,
 	Use:     "godl",
 	Short:   "golang downloader",
 	// Uncomment the following line if your bare application

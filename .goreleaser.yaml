@@ -13,12 +13,11 @@ builds:
       - goos: windows
         goarch: arm64
     ldflags:
-      - -s -w
-      - -X github.com/longkey1/godl/cmd.version={{ .Tag }}
+      - -s -w -X github.com/longkey1/godl/cmd.version={{.Version}}
 archives:
   - format: binary
 checksum:
-  name_template: "checksums.txt"
+  name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
