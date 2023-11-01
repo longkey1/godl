@@ -16,7 +16,7 @@ import (
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
-	Short: "install specific version",
+	Short: "Install specific version",
 	Run: func(cmd *cobra.Command, args []string) {
 		strict, err := cmd.Flags().GetBool("strict")
 		cobra.CheckErr(err)

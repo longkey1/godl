@@ -9,7 +9,7 @@ import (
 var listRemoteCmd = &cobra.Command{
 	Use:     "list-remote",
 	Aliases: []string{"ls-remote"},
-	Short:   "downloadable version list",
+	Short:   "Downloadable version list",
 	Run: func(cmd *cobra.Command, args []string) {
 		latest, err := cmd.Flags().GetBool("latest")
 		cobra.CheckErr(err)

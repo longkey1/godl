@@ -43,7 +43,7 @@ var (
 var rootCmd = &cobra.Command{
 	Version: version,
 	Use:     "godl",
-	Short:   "golang downloader",
+	Short:   "The Golang downloader",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

@@ -9,7 +9,7 @@ import (
 var listCmd = &cobra.Command{
 	Use:     "list",
 	Aliases: []string{"ls"},
-	Short:   "installed version list",
+	Short:   "Installed version list",
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, v := range localLatestVersions() {
 			fmt.Println(v.Original())
