@@ -34,14 +34,12 @@ type Config struct {
 }
 
 var (
-	version = "dev"
 	cfgFile string
 	cfg     Config
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: version,
 	Use:     "godl",
 	Short:   "The Golang downloader",
 	// Uncomment the following line if your bare application
@@ -169,6 +167,10 @@ func remoteVersions() []*hv.Version {
 	sort.Sort(sort.Reverse(hv.Collection(versions)))
 
 	return versions
+}
+
+func SetVersionInfo(version, commit, date string) {
+	rootCmd.Version = fmt.Sprintf("%s (Built on %s from Git SHA %s)", version, date, commit)
 }
 
 func remoteLatestVersions() []*hv.Version {
