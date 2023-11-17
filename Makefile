@@ -2,7 +2,6 @@
 
 ROOT := $(patsubst %/,%,$(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
 BIN := $(ROOT)/bin
-CONFIG := $(ROOT)/config
 DOTFILES := $(ROOT)/.dotfiles
 
 .PHONY: tools
